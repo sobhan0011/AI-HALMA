@@ -1,4 +1,3 @@
-
 public class Move {
 
     public Move(Tile startPos,Tile finalPos){

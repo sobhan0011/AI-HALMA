@@ -1,4 +1,3 @@
-
 public class Pair {
     public Move move = null;
     public int value = 0;

@@ -1,4 +1,3 @@
-
 public class Tile {
     byte x;
     byte y;
