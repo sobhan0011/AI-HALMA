@@ -6,7 +6,7 @@ public class Tile {
     // 0 is none, 1 is red zone and 2 is blue zone
 
     byte zone = 0;
-    public Tile(byte x,byte y){
+    public Tile(byte x,byte y) {
         this.x = x;
         this.y = y;
     }
