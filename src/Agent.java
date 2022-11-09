@@ -75,15 +75,16 @@ public class Agent {
             }
         }
         return score;*/
-        int enemyGroundCapturedCountCurrent = capturedEnemyGround(currentBoard, currentColor);
-        int enemyGroundCapturedCountParent = capturedEnemyGround(parentBoard, currentColor);
-        if (enemyGroundCapturedCountCurrent > enemyGroundCapturedCountParent)
+        int groundCapturedCurrent = capturedEnemyGround(currentBoard, currentColor);
+        int groundCapturedParent = capturedEnemyGround(parentBoard, currentColor);
+        int groundLostCurrent = capturedEnemyGround(parentBoard, (byte) (3 - currentColor));
+        if (groundCapturedCurrent > groundCapturedParent)
             return 2000;
         else
-            return -sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
+            return /*sumOfEuclideanDistanceFromEnemyGround(currentBoard, (byte) (3 - currentColor)) / 2*/ 100 * (groundCapturedCurrent - groundLostCurrent) - sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
 
     }
-    
+
     private int capturedEnemyGround(Tile[][] currentBoard, byte currentColor) {
         int startXEnemyGround = ((currentColor == 1) ? 0 : 4), startYEnemyGround = ((currentColor == 1) ? 0 : 4),
                 finishXEnemyGround = ((currentColor == 1) ? 3 : 7), finishYEnemyGround = ((currentColor == 1) ? 3 : 7);
@@ -113,8 +114,9 @@ public class Agent {
                                 sumOfEuclideanDistance += euclideanDistance;
                         }
 
-        return (int) (sumOfEuclideanDistance * 10);
+        return (int) (sumOfEuclideanDistance);
     }
+
 
     public List<Move> createPossibleMoves(Tile[][] newBoard, int currentColor) {
         List<Move> possibleMoves = new LinkedList<>();
