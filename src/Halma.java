@@ -8,7 +8,6 @@ public class Halma {
     private final Tile[][] tiles;
     private final short totalMoves = 0;
     GUI gameUI = new GUI();
-    private Board board;
     private byte playerTurn;
     private Agent agent;
     private byte firstX, firstY, secondX, secondY;
@@ -17,7 +16,6 @@ public class Halma {
         tiles = new Tile[8][8];
         playerTurn = 1;
         assignCoordinates();
-
     }
 
     private void assignCoordinates() {
@@ -44,6 +42,11 @@ public class Halma {
             else
                 doRandomAction(playerTurn);
         }
+        /*var move = agent.doMinMax(tiles, playerTurn);
+        if (move != null)
+            movePiece(move);
+        else
+            doRandomAction(playerTurn);*/
 
         startGame();
     }
@@ -59,7 +62,6 @@ public class Halma {
     }
 
     private void doRandomAction(int playerTurn) {
-
         var possibleMoves = agent.createPossibleMoves(tiles, playerTurn);
         var random = new Random().nextInt(possibleMoves.size() - 1);
         firstX = possibleMoves.get(random).startPos.x;
@@ -86,9 +88,8 @@ public class Halma {
         gameUI.updateGUI(tiles);
     }
 
-
     public void runGame() {
-        board = new Board();
+        Board board = new Board();
         agent = new Agent(board);
         GUI jk = new GUI();
         jk.createBoard();
@@ -110,7 +111,6 @@ public class Halma {
     }
 
     public void setUpGame() {
-
         gameUI.setCampColors();
         gameUI.addMarbles();
         gameUI.addFrame();

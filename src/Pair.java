@@ -1,6 +1,6 @@
 public class Pair {
-    public Move move = null;
-    public int value = 0;
+    public Move move;
+    public int value;
 
     public Pair(Move move, int value) {
         this.move = move;

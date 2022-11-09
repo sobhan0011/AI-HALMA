@@ -14,20 +14,16 @@ public class GUI extends JFrame {
     private final Icon empty = new ImageIcon("empty");
 
     public void createBoard() {
-
         board = new JPanel(new GridLayout(8, 8));
         board.setSize(400, 400);
-        for (int x = 0; x < squares.length; x++) {
+        for (int x = 0; x < squares.length; x++)
             for (int y = 0; y < squares[x].length; y++) {
                 squares[x][y] = new JButton(x + "," + y);
                 squares[x][y].setPreferredSize(new Dimension(50, 50));
                 squares[x][y].setForeground(Color.BLACK);
                 squares[x][y].setOpaque(true);
-
                 board.add(squares[x][y]);
             }
-        }
-
     }
 
     public void createTextBoxArea() {
@@ -58,34 +54,25 @@ public class GUI extends JFrame {
     public void addMarbles() {
         homePiece = new ImageIcon("red.png"); // these are the default icons
         awayPiece = new ImageIcon("blue.png"); // these are the default icons
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-
-                if ((x + y) <= 3) {
+        for (int x = 0; x < 8; x++)
+            for (int y = 0; y < 8; y++)
+                if ((x + y) <= 3)
                     squares[x][y].setIcon(awayPiece);
-                } else if ((x + y) >= 11) {
+                 else if ((x + y) >= 11)
                     squares[x][y].setIcon(homePiece);
-                } else {
-                    squares[x][y].setIcon(empty);
-                }
-            }
-        }
+                 else
+                     squares[x][y].setIcon(empty);
     }
 
     public void updateGUI(Tile[][] tiles) {
-        for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                if(tiles[x][y].color == 1){
+        for (int x = 0; x < 8; x++)
+            for (int y = 0; y < 8; y++)
+                if(tiles[x][y].color == 1)
                     squares[x][y].setIcon(awayPiece);
-                }
-                else if(tiles[x][y].color == 2){
+                else if(tiles[x][y].color == 2)
                     squares[x][y].setIcon(homePiece);
-                }
-                else {
+                else
                     squares[x][y].setIcon(empty);
-                }
-            }
-        }
     }
 
     public void addFrame() {

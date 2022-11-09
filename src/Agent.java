@@ -22,7 +22,7 @@ public class Agent {
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
 
         if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MIN_VALUE);
+            return new Pair(null, Integer.MIN_VALUE); //
 
             for (Move possibleMove : possibleMoves) {
                 value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
@@ -44,7 +44,7 @@ public class Agent {
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
 
         if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MAX_VALUE);
+            return new Pair(null, Integer.MAX_VALUE); //
 
         for (Move possibleMove : possibleMoves) {
 
@@ -76,20 +76,14 @@ public class Agent {
         }
         return score;*/
         int enemyGroundCapturedCountCurrent = capturedEnemyGround(currentBoard, currentColor);
-        int enemyGroundCapturedCountParent = capturedEnemyGround(currentBoard, currentColor);
+        int enemyGroundCapturedCountParent = capturedEnemyGround(parentBoard, currentColor);
         if (enemyGroundCapturedCountCurrent > enemyGroundCapturedCountParent)
-            if (currentColor == 1)
-                return 2000;
-            else
-                return 2000;
+            return 2000;
         else
-            if (currentColor == 2)
-                return -sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
-            else
-                return -sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
+            return -sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
+
     }
-
-
+    
     private int capturedEnemyGround(Tile[][] currentBoard, byte currentColor) {
         int startXEnemyGround = ((currentColor == 1) ? 0 : 4), startYEnemyGround = ((currentColor == 1) ? 0 : 4),
                 finishXEnemyGround = ((currentColor == 1) ? 3 : 7), finishYEnemyGround = ((currentColor == 1) ? 3 : 7);

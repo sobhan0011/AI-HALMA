@@ -1,6 +1,6 @@
 public class Move {
 
-    public Move(Tile startPos,Tile finalPos){
+    public Move(Tile startPos, Tile finalPos) {
         this.startPos = startPos;
         this.finalPos = finalPos;
     }
