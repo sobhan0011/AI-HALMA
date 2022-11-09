@@ -89,16 +89,6 @@ public class Agent {
                 return -sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
     }
 
-/*for (int x = 0; x < 8; x++) {
-            for (int y = 0; y < 8; y++) {
-                squares[x][y].setBackground(new Color(255, 255, 255));
-                if ((x + y) <= 3) {
-                    squares[x][y].setBackground(new Color(199, 230, 255));
-                }
-                if ((x + y) >= 11) {
-                    squares[x][y].setBackground(new Color(255, 199, 199));
-                }*/
-
 
     private int capturedEnemyGround(Tile[][] currentBoard, byte currentColor) {
         int startXEnemyGround = ((currentColor == 1) ? 0 : 4), startYEnemyGround = ((currentColor == 1) ? 0 : 4),
