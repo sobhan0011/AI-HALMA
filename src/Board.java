@@ -12,7 +12,7 @@ public class Board {
             for (byte j = -1; j <= 1; j++) {
                 x = (byte) (startTile.x + i);
                 y = (byte) (startTile.y + j);
-                if(!isCoordinatesInRange(x,y))
+                if(isCoordinatesOutRange(x, y))
                     continue;
                 newTile = tiles[x][y];
                 if(firstTile.zone != 0 && firstTile.color != firstTile.zone && newTile.zone == 0)
@@ -24,7 +24,7 @@ public class Board {
                 }
                 x += i;
                 y += j;
-                if(!isCoordinatesInRange(x,y))
+                if(isCoordinatesOutRange(x, y))
                     continue;
                 newTile = tiles[x][y];
                 if(firstTile.zone != 0 && firstTile.color != firstTile.zone && newTile.zone == 0)
@@ -60,7 +60,7 @@ public class Board {
         return clone;
     }
 
-    private boolean isCoordinatesInRange(int x,int y){
-        return x >= 0 && x <= 7 && y >= 0 && y <= 7;
+    private boolean isCoordinatesOutRange(int x, int y){
+        return x < 0 || x > 7 || y < 0 || y > 7;
     }
 }

@@ -1,19 +1,17 @@
+import javax.swing.*;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import javax.swing.*;
 
 public class Halma {
 
-    private Board board;
-    private final Tile[][] tiles;
-
     private final static byte maxDepth = 3;
+    private final Tile[][] tiles;
+    private final short totalMoves = 0;
+    GUI gameUI = new GUI();
+    private Board board;
     private byte playerTurn;
-    private short totalMoves = 0;
     private Agent agent;
     private byte firstX, firstY, secondX, secondY;
-
-    GUI gameUI = new GUI();
 
     public Halma() {
         tiles = new Tile[8][8];
@@ -23,19 +21,14 @@ public class Halma {
     }
 
     private void assignCoordinates() {
-        for (byte i = 0; i < 8; i++) {
+        for (byte i = 0; i < 8; i++)
             for (byte j = 0; j < 8; j++) {
                 tiles[i][j] = new Tile(i, j);
-
-                if ((i + j) <= 3) {
-                    tiles[i][j].color = 1;
-                    tiles[i][j].zone = 1;
-                } else if ((i + j) >= 11) {
-                    tiles[i][j].color = 2;
-                    tiles[i][j].zone = 2;
-                }
+                if ((i + j) <= 3)
+                    tiles[i][j].color = tiles[i][j].zone = 1;
+                else if ((i + j) >= 11)
+                    tiles[i][j].color = tiles[i][j].zone = 2;
             }
-        }
     }
 
     private void startGame() {
@@ -45,8 +38,8 @@ public class Halma {
         if (playerTurn == 1)
             doRandomAction(playerTurn);
         else {
-            var move = agent.doMinMax(tiles,playerTurn);
-            if(move != null)
+            var move = agent.doMinMax(tiles, playerTurn);
+            if (move != null)
                 movePiece(move);
             else
                 doRandomAction(playerTurn);
@@ -60,7 +53,8 @@ public class Halma {
             gameUI.printText("\n Game has ended! \n");
             try {
                 TimeUnit.SECONDS.sleep(Integer.MAX_VALUE);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -74,7 +68,6 @@ public class Halma {
         secondY = possibleMoves.get(random).finalPos.y;
         movePiece(possibleMoves.get(random));
     }
-
 
 
     public void changeTurn(short player) {
@@ -92,7 +85,6 @@ public class Halma {
         changeTurn(playerTurn);
         gameUI.updateGUI(tiles);
     }
-
 
 
     public void runGame() {
