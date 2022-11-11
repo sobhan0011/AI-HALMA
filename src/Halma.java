@@ -10,6 +10,7 @@ public class Halma {
     GUI gameUI = new GUI();
     private byte playerTurn;
     private Agent agent;
+//    private Agent agent2;
     private byte firstX, firstY, secondX, secondY;
 
     public Halma() {
@@ -33,16 +34,27 @@ public class Halma {
 
         checkWinner();
 
-        if (playerTurn == 1)
-            doRandomAction(playerTurn);
-        else {
-            var move = agent.doMinMax(tiles, playerTurn);
-            if (move != null)
+        if (playerTurn == 1) {
+//            doRandomAction(playerTurn);
+
+            var move = agent.doMinMaxP1(tiles, playerTurn);
+            if (move != null) {
                 movePiece(move);
-            else
+            }
+            else {
                 doRandomAction(playerTurn);
+            }
         }
-        
+        else {
+            var move = agent.doMinMaxP2(tiles, playerTurn);
+            if (move != null) {
+                movePiece(move);
+            }
+            else {
+                doRandomAction(playerTurn);
+            }
+        }
+
         startGame();
     }
 
