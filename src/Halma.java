@@ -37,7 +37,7 @@ public class Halma {
         if (playerTurn == 1) {
 //            doRandomAction(playerTurn);
 
-            var move = agent.doMinMaxP1(tiles, playerTurn);
+            var move = agent.doMinMax(tiles, playerTurn,1);
             if (move != null) {
                 movePiece(move);
             }
@@ -45,8 +45,10 @@ public class Halma {
                 doRandomAction(playerTurn);
             }
         }
-        else {
-            var move = agent.doMinMaxP2(tiles, playerTurn);
+        else {//red
+//            doRandomAction(playerTurn);
+
+            var move = agent.doMinMax(tiles, playerTurn,1);
             if (move != null) {
                 movePiece(move);
             }
