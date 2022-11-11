@@ -10,7 +10,7 @@ public class Agent {
 
     public Move doMinMax(Tile[][] tiles, byte playerTurn, int eval_type) {
         Pair temp;
-        temp = max(tiles, playerTurn, (byte) (0),eval_type);
+        temp = max(tiles, playerTurn, (byte) (0), eval_type);
         this.playerTurn = playerTurn;
         return temp.move;
     }
@@ -22,50 +22,50 @@ public class Agent {
 //    }
 //
 //
-    private Pair max2(Tile[][] currentBoard, byte currentColor, byte depth) {
-        byte MAX_DEPTH = 3;
-        int maxValue = Integer.MIN_VALUE, value;
-        Move bestMove = null;
-        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
-        boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
+//    private Pair max2(Tile[][] currentBoard, byte currentColor, byte depth) {
+//        byte MAX_DEPTH = 3;
+//        int maxValue = Integer.MIN_VALUE, value;
+//        Move bestMove = null;
+//        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
+//        boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
+//
+//        if (checkTerminal(currentBoard))
+//            return new Pair(null, Integer.MIN_VALUE); //
+//
+//        for (Move possibleMove : possibleMoves) {
+//            value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min2(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
+//            if (value > maxValue) {
+//                maxValue = value;
+//                bestMove = possibleMove;
+//            }
+//        }
+//        return new Pair(bestMove, maxValue);
+//        // return new Pair(null, 0);
+//    }
 
-        if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MIN_VALUE); //
-
-        for (Move possibleMove : possibleMoves) {
-            value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min2(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
-            if (value > maxValue) {
-                maxValue = value;
-                bestMove = possibleMove;
-            }
-        }
-        return new Pair(bestMove, maxValue);
-        // return new Pair(null, 0);
-    }
-
-    private Pair min2(Tile[][] currentBoard, byte currentColor, byte depth) {
-        byte MAX_DEPTH = 3;
-        int minValue = Integer.MAX_VALUE, value;
-        Move worstMove = null;
-        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
-        boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
-
-        if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MAX_VALUE); //
-
-        for (Move possibleMove : possibleMoves) {
-
-            value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor) : max2(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
-            if (value < minValue)
-            {
-                minValue = value;
-                worstMove = possibleMove;
-            }
-        }
-        return new Pair(worstMove, minValue);
-        // return new Pair(null, 0);
-    }
-
+//    private Pair min2(Tile[][] currentBoard, byte currentColor, byte depth) {
+//        byte MAX_DEPTH = 3;
+//        int minValue = Integer.MAX_VALUE, value;
+//        Move worstMove = null;
+//        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
+//        boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
+//
+//        if (checkTerminal(currentBoard))
+//            return new Pair(null, Integer.MAX_VALUE); //
+//
+//        for (Move possibleMove : possibleMoves) {
+//
+//            value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor) : max2(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
+//            if (value < minValue)
+//            {
+//                minValue = value;
+//                worstMove = possibleMove;
+//            }
+//        }
+//        return new Pair(worstMove, minValue);
+//        // return new Pair(null, 0);
+//    }
+//
     private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int eval_type) {
         byte MAX_DEPTH = 3;
         int maxValue = Integer.MIN_VALUE, value;
