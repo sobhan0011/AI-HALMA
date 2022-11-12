@@ -10,7 +10,7 @@ public class Halma {
     GUI gameUI = new GUI();
     private byte playerTurn;
     private Agent agent;
-//    private Agent agent2;
+    private Agent2 agent2;
     private byte firstX, firstY, secondX, secondY;
 
     public Halma() {
@@ -37,7 +37,7 @@ public class Halma {
         if (playerTurn == 1) {
 //            doRandomAction(playerTurn);
 
-            var move = agent.doMinMax(tiles, playerTurn,1);
+            var move = agent2.doMinMax(tiles, playerTurn);
             if (move != null) {
                 movePiece(move);
             }
@@ -48,7 +48,7 @@ public class Halma {
         else {//red
 //            doRandomAction(playerTurn);
 
-            var move = agent.doMinMax(tiles, playerTurn,2);
+            var move = agent.doMinMax(tiles, playerTurn);
             if (move != null) {
                 movePiece(move);
             }
@@ -56,7 +56,11 @@ public class Halma {
                 doRandomAction(playerTurn);
             }
         }
-
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         startGame();
     }
 
@@ -100,6 +104,7 @@ public class Halma {
     public void runGame() {
         Board board = new Board();
         agent = new Agent(board);
+        agent2 = new Agent2(board);
         GUI jk = new GUI();
         jk.createBoard();
         jk.createTextBoxArea();

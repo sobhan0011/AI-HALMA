@@ -8,9 +8,9 @@ public class Agent {
         this.board = board;
     }
 
-    public Move doMinMax(Tile[][] tiles, byte playerTurn, int eval_type) {
+    public Move doMinMax(Tile[][] tiles, byte playerTurn) {
         Pair temp;
-        temp = max(tiles, playerTurn, (byte) (0), eval_type);
+        temp = max(tiles, playerTurn, (byte) (0));
         this.playerTurn = playerTurn;
         return temp.move;
     }
@@ -66,7 +66,7 @@ public class Agent {
 //        // return new Pair(null, 0);
 //    }
 //
-    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int eval_type) {
+    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth) {
         byte MAX_DEPTH = 3;
         int maxValue = Integer.MIN_VALUE, value;
         Move bestMove = null;
@@ -77,11 +77,7 @@ public class Agent {
             return new Pair(null, Integer.MIN_VALUE); //
 
             for (Move possibleMove : possibleMoves) {
-                if (eval_type==1) {
-                    value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), eval_type).value;
-                }else {
-                    value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), eval_type).value;
-                }
+                value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
                 if (value > maxValue) {
                     maxValue = value;
                     bestMove = possibleMove;
@@ -91,7 +87,7 @@ public class Agent {
         // return new Pair(null, 0);
     }
 
-    private Pair min(Tile[][] currentBoard, byte currentColor, byte depth, int eval_type) {
+    private Pair min(Tile[][] currentBoard, byte currentColor, byte depth) {
         byte MAX_DEPTH = 3;
         int minValue = Integer.MAX_VALUE, value;
         Move worstMove = null;
@@ -102,12 +98,8 @@ public class Agent {
             return new Pair(null, Integer.MAX_VALUE); //
 
         for (Move possibleMove : possibleMoves) {
-            if (eval_type==1) {
-                value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), eval_type).value;
-            }
-            else {
-                value = cutOFFIsReached ? opponent_evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), eval_type).value;
-            }
+
+            value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
             if (value < minValue)
             {
                 minValue = value;
@@ -118,7 +110,7 @@ public class Agent {
         // return new Pair(null, 0);
     }
 
-    private int evaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
+    public int evaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
         /*short score = 0;
         for (byte i = 0; i < currentBoard.length; i++) {
             for (byte j = 0; j < currentBoard.length; j++) {
@@ -144,31 +136,7 @@ public class Agent {
 
     }
 
-    private int opponent_evaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
-        short score = 0;
-        for (byte i = 0; i < currentBoard.length; i++) {
-            for (byte j = 0; j < currentBoard.length; j++) {
-                if (currentBoard[i][j].color == playerTurn) {
-                    score += (7 - i);
-                    score += (7 - j);
-                } else if (currentBoard[i][j].color == (3 - playerTurn)) {
 
-                    score -= i;
-                    score -= j;
-
-                }
-            }
-        }
-        return score;
-//        int groundCapturedCurrent = capturedEnemyGround(currentBoard, currentColor);
-//        int groundCapturedParent = capturedEnemyGround(parentBoard, currentColor);
-//        int groundLostCurrent = capturedEnemyGround(parentBoard, (byte) (3 - currentColor));
-//        if (groundCapturedCurrent > groundCapturedParent)
-//            return 2000;
-//        else
-//            return /*sumOfEuclideanDistanceFromEnemyGround(currentBoard, (byte) (3 - currentColor)) / 2*/ 100 * (groundCapturedCurrent - groundLostCurrent) - sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
-
-    }
 
     private int capturedEnemyGround(Tile[][] currentBoard, byte currentColor) {
         int startXEnemyGround = ((currentColor == 1) ? 0 : 4), startYEnemyGround = ((currentColor == 1) ? 0 : 4),
