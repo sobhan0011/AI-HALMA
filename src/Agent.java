@@ -8,36 +8,39 @@ public class Agent {
         this.board = board;
     }
 
-    public Move doMinMax(Tile[][] tiles, byte playerTurn) {
-        Pair temp = max(tiles, playerTurn, (byte) (0));
+    public Move doMinMaxAlphaBeta(Tile[][] tiles, byte playerTurn) {
+        Pair temp = max(tiles, playerTurn, (byte) (0), Integer.MIN_VALUE, Integer.MAX_VALUE);
         this.playerTurn = playerTurn;
         return temp.move;
     }
 
-    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth) {
-        byte MAX_DEPTH = 3;
+    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
+        byte MAX_DEPTH = 4;
         int maxValue = Integer.MIN_VALUE, value;
         Move bestMove = null;
         List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
 
         if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MIN_VALUE); //
+            return new Pair(null, Integer.MIN_VALUE);
 
             for (Move possibleMove : possibleMoves) {
-                value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) : min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
+                value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) :
+                        min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
                 if (value > maxValue)
                 {
                     maxValue = value;
                     bestMove = possibleMove;
                 }
+                if (maxValue >= beta)
+                    return new Pair(bestMove, maxValue);
+                alpha = Math.max(alpha, maxValue);
             }
             return new Pair(bestMove, maxValue);
-        // return new Pair(null, 0);
     }
 
-    private Pair min(Tile[][] currentBoard, byte currentColor, byte depth) {
-        byte MAX_DEPTH = 3;
+    private Pair min(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
+        byte MAX_DEPTH = 4;
         int minValue = Integer.MAX_VALUE, value;
         Move worstMove = null;
         List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
@@ -47,43 +50,43 @@ public class Agent {
             return new Pair(null, Integer.MAX_VALUE); //
 
         for (Move possibleMove : possibleMoves) {
-
-            value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor) : max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1)).value;
+            value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor) :
+                    max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
             if (value < minValue)
             {
                 minValue = value;
                 worstMove = possibleMove;
             }
+           if (minValue <= alpha)
+                return new Pair(worstMove, minValue);
+            beta = Math.min(beta, minValue);
         }
         return new Pair(worstMove, minValue);
-        // return new Pair(null, 0);
     }
 
     private int evaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
-        /*short score = 0;
-        for (byte i = 0; i < currentBoard.length; i++) {
-            for (byte j = 0; j < currentBoard.length; j++) {
+        short score = 0;
+        for (byte i = 0; i < currentBoard.length; i++)
+            for (byte j = 0; j < currentBoard.length; j++)
                 if (currentBoard[i][j].color == playerTurn) {
                     score += (7 - i);
                     score += (7 - j);
                 } else if (currentBoard[i][j].color == (3 - playerTurn)) {
-
                     score -= i;
                     score -= j;
-
                 }
-            }
-        }
-        return score;*/
+        return score;
+    }
+
+    private int ourEvaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
         int groundCapturedCurrent = capturedEnemyGround(currentBoard, currentColor);
         int groundCapturedParent = capturedEnemyGround(parentBoard, currentColor);
         int groundLostCurrent = capturedEnemyGround(parentBoard, (byte) (3 - currentColor));
         if (groundCapturedCurrent > groundCapturedParent)
             return 2000;
         else
-            return /*sumOfEuclideanDistanceFromEnemyGround(currentBoard, (byte) (3 - currentColor)) / 2*/ 100 * (groundCapturedCurrent - groundLostCurrent) - sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
-
-    }
+            return sumOfEuclideanDistanceFromEnemyGround(currentBoard, (byte) (3 - currentColor)) / 2 + 100 * (groundCapturedCurrent - groundLostCurrent) - sumOfEuclideanDistanceFromEnemyGround(currentBoard, currentColor);
+     }
 
     private int capturedEnemyGround(Tile[][] currentBoard, byte currentColor) {
         int startXEnemyGround = ((currentColor == 1) ? 0 : 4), startYEnemyGround = ((currentColor == 1) ? 0 : 4),
@@ -116,7 +119,6 @@ public class Agent {
 
         return (int) (sumOfEuclideanDistance);
     }
-
 
     public List<Move> createPossibleMoves(Tile[][] newBoard, int currentColor) {
         List<Move> possibleMoves = new LinkedList<>();
