@@ -9,24 +9,30 @@ public class Agent {
     }
 
     public Move doMinMaxAlphaBeta(Tile[][] tiles, byte playerTurn) {
+        TranspositionTable transpositionTable = new TranspositionTable();
         Pair temp = max(tiles, playerTurn, (byte) (0), Integer.MIN_VALUE, Integer.MAX_VALUE);
         this.playerTurn = playerTurn;
         return temp.move;
     }
 
     private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
-        byte MAX_DEPTH = 4;
-        int maxValue = Integer.MIN_VALUE, value;
+        if (depth != 0)
+            playerTurn = (byte) (3 - playerTurn);
+        byte MAX_DEPTH = 3;
+        int maxValue = Integer.MIN_VALUE, value, eval;
         Move bestMove = null;
         List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
 
         if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MIN_VALUE);
+            return new Pair(null, Integer.MIN_VALUE); //MAX MAX -- MIN MAX
 
             for (Move possibleMove : possibleMoves) {
-                value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor) :
-                        min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
+                eval = evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor);
+                if (cutOFFIsReached)
+                    value = eval;
+                else
+                    value = min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
                 if (value > maxValue)
                 {
                     maxValue = value;
@@ -40,18 +46,22 @@ public class Agent {
     }
 
     private Pair min(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
-        byte MAX_DEPTH = 4;
-        int minValue = Integer.MAX_VALUE, value;
+        playerTurn = (byte) (3 - playerTurn);
+        byte MAX_DEPTH = 3;
+        int minValue = Integer.MAX_VALUE, value, eval;
         Move worstMove = null;
         List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
 
         if (checkTerminal(currentBoard))
-            return new Pair(null, Integer.MAX_VALUE); //
+            return new Pair(null, Integer.MAX_VALUE);
 
         for (Move possibleMove : possibleMoves) {
-            value = cutOFFIsReached ? evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor) :
-                    max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
+            eval = evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor);
+            if (cutOFFIsReached)
+                value = eval;
+            else
+                value = max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
             if (value < minValue)
             {
                 minValue = value;
