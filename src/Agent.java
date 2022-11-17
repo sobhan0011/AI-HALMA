@@ -4,64 +4,112 @@ import java.util.List;
 public class Agent {
     private final Board board;
     private byte playerTurn;
+    private final TranspositionTable transpositionTable = new TranspositionTable();
     public Agent(Board board) {
         this.board = board;
     }
 
     public Move doMinMaxAlphaBeta(Tile[][] tiles, byte playerTurn) {
-        TranspositionTable transpositionTable = new TranspositionTable();
-        Pair temp = max(tiles, playerTurn, (byte) (0), Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Pair temp = max(tiles, playerTurn, (byte) (0), Integer.MIN_VALUE, Integer.MAX_VALUE/*, transpositionTable*/);
         this.playerTurn = playerTurn;
         return temp.move;
     }
 
-    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
+    private Pair max(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta/*, TranspositionTable transpositionTable*/) {
         if (depth != 0)
             playerTurn = (byte) (3 - playerTurn);
-        byte MAX_DEPTH = 3;
+        byte MAX_DEPTH = 4;
         int maxValue = Integer.MIN_VALUE, value, eval;
         Move bestMove = null;
-        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
+
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
+        Tile[][] newBoard;
 
         if (checkTerminal(currentBoard))
             return new Pair(null, Integer.MIN_VALUE); //MAX MAX -- MIN MAX
 
-            for (Move possibleMove : possibleMoves) {
-                eval = evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(), currentColor);
-                if (cutOFFIsReached)
-                    value = eval;
-                else
-                    value = min(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
-                if (value > maxValue)
-                {
-                    maxValue = value;
-                    bestMove = possibleMove;
-                }
-                if (maxValue >= beta)
-                    return new Pair(bestMove, maxValue);
-                alpha = Math.max(alpha, maxValue);
+        long zobristHash = Zobrist.getZobristHash(currentBoard, playerTurn);
+
+        NodeInfo nodeInfo = null, childInfo = null;
+        if (transpositionTable.contains(currentBoard, playerTurn))
+            nodeInfo = transpositionTable.getNodes().get(zobristHash);
+
+        if (nodeInfo != null && nodeInfo.getDepth() == 3 && nodeInfo.getBestMove() != null)
+            return new Pair(transpositionTable.getNodes().get(zobristHash).getBestMove(), transpositionTable.getNodes().get(zobristHash).getAlpha());
+
+        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
+
+        for (Move possibleMove : possibleMoves) {
+            newBoard = board.doMove(possibleMove, currentBoard);
+            if (transpositionTable.contains(newBoard, playerTurn))
+                childInfo = transpositionTable.getNodes().get(zobristHash);
+            eval = (childInfo != null) ? childInfo.getEval() : evaluate(newBoard);
+
+            if (cutOFFIsReached)
+                value = eval;
+            else if (childInfo != null && childInfo.getWorstMove() != null)
+                value = childInfo.getBeta();
+            else
+                value = min(newBoard, (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
+            if (value > maxValue)
+            {
+                maxValue = value;
+                bestMove = possibleMove;
             }
-            return new Pair(bestMove, maxValue);
+            if (maxValue >= beta)
+                return new Pair(bestMove, maxValue);
+            alpha = Math.max(alpha, maxValue);
+        }
+
+        if (depth == 3 && nodeInfo == null)
+            transpositionTable.addNode(currentBoard, evaluate(currentBoard), alpha, 0, bestMove, null, playerTurn, 3);
+        else if (nodeInfo == null)
+            transpositionTable.addNode(currentBoard, evaluate(currentBoard), 0, 0, null, null, playerTurn,  0);
+        else if (depth == 3 && nodeInfo.getBestMove() == null)
+        {
+            nodeInfo.setDepth(3);
+            nodeInfo.setAlpha(alpha);
+            nodeInfo.setBestMove(bestMove);
+        }
+
+
+        return new Pair(bestMove, maxValue);
     }
 
     private Pair min(Tile[][] currentBoard, byte currentColor, byte depth, int alpha, int beta) {
         playerTurn = (byte) (3 - playerTurn);
-        byte MAX_DEPTH = 3;
+        byte MAX_DEPTH = 4;
         int minValue = Integer.MAX_VALUE, value, eval;
         Move worstMove = null;
-        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
-
+        Tile[][] newBoard;
         if (checkTerminal(currentBoard))
             return new Pair(null, Integer.MAX_VALUE);
 
+        long zobristHash = Zobrist.getZobristHash(currentBoard, playerTurn), childZobrist;
+
+        NodeInfo nodeInfo = null, childInfo = null;
+        if (transpositionTable.contains(currentBoard, playerTurn))
+            nodeInfo = transpositionTable.getNodes().get(zobristHash);
+
+        if (nodeInfo != null && nodeInfo.getDepth() == 3 && nodeInfo.getWorstMove() != null)
+            return new Pair(transpositionTable.getNodes().get(zobristHash).getWorstMove(), transpositionTable.getNodes().get(zobristHash).getBeta());
+
+        List<Move> possibleMoves = createPossibleMoves(currentBoard, currentColor);
+
         for (Move possibleMove : possibleMoves) {
-            eval = evaluate(board.doMove(possibleMove, currentBoard), currentBoard.clone(),currentColor);
+
+            newBoard = board.doMove(possibleMove, currentBoard);
+            if (transpositionTable.contains(newBoard, playerTurn))
+                childInfo = transpositionTable.getNodes().get(zobristHash);
+            eval = (childInfo != null) ? childInfo.getEval() : evaluate(newBoard);
+
             if (cutOFFIsReached)
                 value = eval;
+            else if (childInfo != null && childInfo.getBestMove() != null)
+                value = childInfo.getAlpha();
             else
-                value = max(board.doMove(possibleMove, currentBoard), (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
+                value = max(newBoard, (byte) (currentColor == 0 ? 1 : 0), (byte) (depth + 1), alpha, beta).value;
             if (value < minValue)
             {
                 minValue = value;
@@ -71,10 +119,23 @@ public class Agent {
                 return new Pair(worstMove, minValue);
             beta = Math.min(beta, minValue);
         }
+
+        if (depth == 3 && nodeInfo == null)
+            transpositionTable.addNode(currentBoard, evaluate(currentBoard), 0, beta, null, worstMove, playerTurn, 3);
+        else if (nodeInfo == null)
+            transpositionTable.addNode(currentBoard, evaluate(currentBoard), 0, 0, null, null, playerTurn,  0);
+        else if (depth == 3 && nodeInfo.getWorstMove() == null)
+        {
+            nodeInfo.setDepth(3);
+            nodeInfo.setBeta(beta);
+            nodeInfo.setWorstMove(worstMove);
+        }
+
+
         return new Pair(worstMove, minValue);
     }
 
-    private int evaluate(Tile[][] currentBoard, Tile[][] parentBoard, byte currentColor) {
+    private int evaluate(Tile[][] currentBoard) {
         short score = 0;
         for (byte i = 0; i < currentBoard.length; i++)
             for (byte j = 0; j < currentBoard.length; j++)
