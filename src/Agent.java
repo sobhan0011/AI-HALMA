@@ -21,7 +21,7 @@ public class Agent {
         byte MAX_DEPTH = 4;
         int maxValue = Integer.MIN_VALUE, value, eval;
         Move bestMove = null;
-
+//
         boolean cutOFFIsReached = (depth + 1) >= MAX_DEPTH;
         Tile[][] newBoard;
 
